@@ -1,0 +1,308 @@
+<Window
+    x:Class="Lantern.Desktop.Views.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Lantern.Desktop.ViewModels"
+    Title="LANtern"
+    Icon="/Assets/lantern-icon.ico"
+    Background="{DynamicResource AppBackgroundBrush}"
+    Width="1240"
+    Height="780"
+    MinWidth="1040"
+    MinHeight="680">
+  <Window.DataTemplates>
+    <DataTemplate DataType="{x:Type vm:StatCardViewModel}">
+      <Border Classes="card" MinWidth="140">
+        <StackPanel Spacing="4">
+          <TextBlock Text="{Binding Label}" Classes="muted" />
+          <TextBlock Text="{Binding Value}" FontSize="30" FontWeight="SemiBold" Foreground="{Binding Accent}" />
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:DeviceCardViewModel}">
+      <Border Classes="card" Padding="12" Margin="0,0,0,10">
+        <Grid ColumnDefinitions="44,*,Auto" RowDefinitions="Auto,Auto">
+          <Border Width="34" Height="34" CornerRadius="8" Background="{Binding AvatarBrush}" VerticalAlignment="Top">
+            <TextBlock Text="{Binding AvatarText}" Foreground="White" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <StackPanel Grid.Column="1" Spacing="2">
+            <TextBlock Text="{Binding FriendlyName}" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+            <TextBlock Text="{Binding Subtitle}" Classes="muted" FontSize="12" />
+          </StackPanel>
+          <Border Grid.Column="2" Background="{Binding StatusBrush}" CornerRadius="8" Padding="8,4" VerticalAlignment="Top">
+            <TextBlock Text="{Binding StatusText}" Foreground="White" FontSize="12" />
+          </Border>
+          <TextBlock Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding LastSeenText}" Classes="muted" FontSize="12" Margin="0,8,0,0" />
+        </Grid>
+      </Border>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:TimelineItemViewModel}">
+      <Border Classes="card" Padding="12" Margin="0,0,0,10">
+        <StackPanel Spacing="4">
+          <TextBlock Text="{Binding TimeText}" Classes="muted" FontSize="12" />
+          <TextBlock Text="{Binding Title}" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+          <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Classes="muted" />
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:SecurityInsightViewModel}">
+      <Border Classes="card" Padding="12" Margin="0,0,0,10">
+        <StackPanel Spacing="4">
+          <TextBlock Text="{Binding Title}" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+          <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" Classes="muted" />
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:IntegrationItemViewModel}">
+      <Border Classes="card" Padding="12" Margin="0,0,0,10">
+        <StackPanel Spacing="4">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+            <TextBlock Grid.Column="1" Text="{Binding Status}" Foreground="#12B76A" />
+          </Grid>
+          <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" Classes="muted" />
+          <TextBlock Text="{Binding Address}" TextWrapping="Wrap" Classes="muted" FontSize="12" />
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+
+  </Window.DataTemplates>
+
+  <Grid ColumnDefinitions="220,*">
+    <Border Classes="sidebar">
+      <StackPanel Spacing="18">
+        <StackPanel Spacing="2">
+          <TextBlock Text="LANtern" FontSize="28" FontWeight="SemiBold" Foreground="White" />
+          <TextBlock Text="Local area network mapper" Foreground="#98A2B3" />
+        </StackPanel>
+        <Border Background="#1D2939" CornerRadius="8" Padding="12">
+          <StackPanel Spacing="8">
+            <TextBlock Text="{Binding OnlineSummary}" Foreground="White" FontWeight="SemiBold" />
+            <TextBlock Text="{Binding LastScanText}" Foreground="#98A2B3" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+        <Button Classes="primary" Command="{Binding ScanCommand}" HorizontalAlignment="Stretch">
+          <TextBlock Text="{Binding ScanButtonText}" HorizontalAlignment="Center" />
+        </Button>
+        <Button Classes="secondary" Command="{Binding ShowDashboardCommand}" Content="Dashboard" HorizontalAlignment="Stretch" />
+        <Button Classes="secondary" Command="{Binding ShowSettingsCommand}" Content="Settings" HorizontalAlignment="Stretch" />
+        <TextBlock Text="{Binding ProgressMessage}" Foreground="#98A2B3" TextWrapping="Wrap" />
+      </StackPanel>
+    </Border>
+
+    <Grid Grid.Column="1" RowDefinitions="Auto,Auto,*" Margin="24" RowSpacing="16" IsVisible="{Binding IsDashboardVisible}">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="4">
+          <TextBlock Text="Dashboard" Classes="h1" />
+          <TextBlock Text="Devices, changes, and helpful explanations from your local network." Classes="muted" />
+        </StackPanel>
+        <Button Grid.Column="1" Classes="secondary" Command="{Binding RefreshCommand}" Content="Refresh" VerticalAlignment="Center" />
+      </Grid>
+
+      <ItemsControl Grid.Row="1" ItemsSource="{Binding Stats}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <UniformGrid Rows="1" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+      </ItemsControl>
+
+      <Grid Grid.Row="2" ColumnDefinitions="360,*,320" ColumnSpacing="16">
+        <Grid RowDefinitions="Auto,*" RowSpacing="12">
+          <Border Classes="card">
+            <StackPanel Spacing="10">
+              <TextBox Watermark="Search devices" Text="{Binding SearchText, Mode=TwoWay}" />
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                <ComboBox ItemsSource="{Binding StatusOptions}" SelectedItem="{Binding SelectedStatusOption}" />
+                <ComboBox Grid.Column="1" ItemsSource="{Binding TypeOptions}" SelectedItem="{Binding SelectedTypeOption}" />
+              </Grid>
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                <ComboBox ItemsSource="{Binding VendorOptions}" SelectedItem="{Binding SelectedVendorOption}" />
+                <CheckBox Grid.Column="1" Content="Recently seen" IsChecked="{Binding RecentlySeenOnly}" />
+              </Grid>
+              <CheckBox Content="Unknown devices only" IsChecked="{Binding UnknownOnly}" />
+            </StackPanel>
+          </Border>
+
+          <ListBox Grid.Row="1" ItemsSource="{Binding Devices}" SelectedItem="{Binding SelectedDevice}" Background="Transparent" BorderThickness="0" />
+        </Grid>
+
+        <ScrollViewer Grid.Column="1">
+          <StackPanel Spacing="12">
+            <Border Classes="card">
+              <StackPanel Spacing="12">
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="{Binding SelectedDevice.FriendlyName}" Classes="h1" />
+                    <TextBlock Text="{Binding SelectedDevice.ClassificationExplanation}" Classes="muted" TextWrapping="Wrap" />
+                  </StackPanel>
+                  <Border Grid.Column="1" Background="{Binding SelectedDevice.StatusBrush}" CornerRadius="8" Padding="10,6" VerticalAlignment="Top">
+                    <TextBlock Text="{Binding SelectedDevice.StatusText}" Foreground="White" />
+                  </Border>
+                </Grid>
+
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="14" RowSpacing="10">
+                  <StackPanel>
+                    <TextBlock Text="IP address" Classes="muted" />
+                    <TextBlock Text="{Binding SelectedDevice.IpAddress}" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="1">
+                    <TextBlock Text="MAC address" Classes="muted" />
+                    <TextBlock Text="{Binding SelectedDevice.MacAddress}" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                  </StackPanel>
+                  <StackPanel Grid.Row="1">
+                    <TextBlock Text="{Binding SelectedDevice.HostnameLabel}" Classes="muted" />
+                    <TextBlock Text="{Binding SelectedDevice.Hostname}" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                  </StackPanel>
+                  <StackPanel Grid.Row="1" Grid.Column="1">
+                    <TextBlock Text="Vendor" Classes="muted" />
+                    <TextBlock Text="{Binding SelectedDevice.Vendor}" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                  </StackPanel>
+                  <StackPanel Grid.Row="2">
+                    <TextBlock Text="Type" Classes="muted" />
+                    <TextBlock Text="{Binding SelectedDevice.DeviceTypeText}" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                  </StackPanel>
+                  <StackPanel Grid.Row="2" Grid.Column="1">
+                    <TextBlock Text="First seen" Classes="muted" />
+                    <TextBlock Text="{Binding SelectedDevice.FirstSeenText}" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                  </StackPanel>
+                </Grid>
+              </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+              <StackPanel Spacing="10">
+                <TextBlock Text="Name and notes" Classes="h2" />
+                <TextBox Watermark="Friendly name" Text="{Binding EditableFriendlyName}" />
+                <TextBox Watermark="Room, person, or group label" Text="{Binding EditableLocationLabel}" />
+                <TextBox Watermark="Notes" Text="{Binding EditableNotes}" MinHeight="90" AcceptsReturn="True" TextWrapping="Wrap" />
+                <Button Classes="primary" Command="{Binding SaveDeviceCommand}" Content="Save" HorizontalAlignment="Left" />
+              </StackPanel>
+            </Border>
+
+            <StackPanel>
+              <TextBlock Text="Security insights" Classes="h2" Margin="0,0,0,8" />
+              <ItemsControl ItemsSource="{Binding SecurityInsights}" />
+            </StackPanel>
+
+            <StackPanel>
+              <TextBlock Text="Local integrations" Classes="h2" Margin="0,0,0,8" />
+              <ItemsControl ItemsSource="{Binding Integrations}" />
+            </StackPanel>
+          </StackPanel>
+        </ScrollViewer>
+
+        <Grid Grid.Column="2" RowDefinitions="Auto,*" RowSpacing="12">
+          <TextBlock Text="Timeline" Classes="h2" />
+          <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding Timeline}" />
+          </ScrollViewer>
+        </Grid>
+      </Grid>
+    </Grid>
+
+    <ScrollViewer Grid.Column="1" Margin="24" IsVisible="{Binding IsSettingsVisible}">
+      <StackPanel Spacing="16" MaxWidth="760">
+        <StackPanel Spacing="4">
+          <TextBlock Text="Settings" Classes="h1" />
+          <TextBlock Text="App preferences, local data, and software information." Classes="muted" />
+        </StackPanel>
+
+        <Border Classes="card">
+          <StackPanel Spacing="14">
+            <TextBlock Text="Preferences" Classes="h2" />
+            <CheckBox Content="Notifications" IsChecked="{Binding NotificationsEnabled}" />
+            <CheckBox Content="{Binding ThemeLabel}" IsChecked="{Binding IsDarkMode}" />
+            <TextBlock Text="LANtern follows your system theme by default. The toggle lets you preview the dark or light palette while the app is open." Classes="muted" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+
+        <Border Classes="card">
+          <StackPanel Spacing="12">
+            <TextBlock Text="Scanning" Classes="h2" />
+            <TextBlock Text="{Binding PrivateSubnetSummary}" Classes="muted" TextWrapping="Wrap" />
+            <CheckBox Content="Scan automatically while LANtern is open" IsChecked="{Binding AutoScanEnabled}" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+              <NumericUpDown Minimum="5" Maximum="1440" Increment="5" Value="{Binding AutoScanIntervalMinutes}" />
+              <ComboBox Grid.Column="1" ItemsSource="{Binding ScanProfileOptions}" SelectedItem="{Binding SelectedScanProfile}" />
+            </Grid>
+            <TextBlock Text="Interval in minutes and scan profile. Home stays gentle, Homelab checks more local services, and Classroom uses a quieter sweep." Classes="muted" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+
+        <Border Classes="card">
+          <StackPanel Spacing="12">
+            <TextBlock Text="Read-only companion dashboard" Classes="h2" />
+            <CheckBox Content="Share a mobile-friendly dashboard on this LAN" IsChecked="{Binding CompanionDashboardEnabled}" />
+            <NumericUpDown Minimum="1024" Maximum="65535" Increment="1" Value="{Binding CompanionDashboardPort}" />
+            <TextBlock Text="{Binding CompanionDashboardStatus}" Classes="muted" TextWrapping="Wrap" />
+            <TextBlock Text="The companion page can view remembered devices but cannot scan, edit, or administer anything." Classes="muted" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+
+        <Border Classes="card">
+          <StackPanel Spacing="12">
+            <TextBlock Text="Local data" Classes="h2" />
+            <TextBlock Text="{Binding DataInfo}" Classes="muted" TextWrapping="Wrap" />
+            <Button Classes="primary" Command="{Binding PurgeDatabaseCommand}" Content="Purge database" HorizontalAlignment="Left" />
+            <TextBlock Text="This deletes remembered devices, notes, ports, and timeline history from the local SQLite database." Classes="muted" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+
+        <Border Classes="card">
+          <StackPanel Spacing="10">
+            <TextBlock Text="Reports and exports" Classes="h2" />
+            <WrapPanel>
+              <Button Classes="primary" Command="{Binding ExportDevicesCommand}" Content="Export devices CSV" Margin="0,0,8,8" />
+              <Button Classes="secondary" Command="{Binding ExportTimelineCommand}" Content="Export timeline CSV" Margin="0,0,8,8" />
+              <Button Classes="secondary" Command="{Binding ExportPdfCommand}" Content="Create PDF report" Margin="0,0,8,8" />
+            </WrapPanel>
+          </StackPanel>
+        </Border>
+
+        <Border Classes="card">
+          <StackPanel Spacing="12">
+            <TextBlock Text="MAC vendor database" Classes="h2" />
+            <TextBlock Text="LANtern refreshes the official IEEE OUI database automatically. You can also import an IEEE-style CSV file from this computer." Classes="muted" TextWrapping="Wrap" />
+            <TextBox Watermark="Full path to OUI CSV file" Text="{Binding VendorCsvPath}" />
+            <Button Classes="secondary" Command="{Binding ImportVendorCsvCommand}" Content="Import vendor CSV" HorizontalAlignment="Left" />
+          </StackPanel>
+        </Border>
+
+        <Border Classes="card">
+          <StackPanel Spacing="12">
+            <TextBlock Text="MikroTik hostname import" Classes="h2" />
+            <TextBlock Text="{Binding MikroTikInfo}" Classes="muted" TextWrapping="Wrap" />
+            <CheckBox Content="Enable MikroTik DHCP lease hostnames" IsChecked="{Binding MikroTikEnabled}" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+              <TextBox Watermark="Router address" Text="{Binding MikroTikHost}" />
+              <TextBox Grid.Column="1" Watermark="Username" Text="{Binding MikroTikUsername}" />
+            </Grid>
+            <TextBox Watermark="Password" Text="{Binding MikroTikPassword}" PasswordChar="*" />
+            <Button Classes="primary" Command="{Binding SaveMikroTikSettingsCommand}" Content="Save MikroTik settings" HorizontalAlignment="Left" />
+          </StackPanel>
+        </Border>
+
+        <Border Classes="card">
+          <StackPanel Spacing="10">
+            <TextBlock Text="Software" Classes="h2" />
+            <TextBlock Text="{Binding VersionInfo}" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+            <TextBlock Text="{Binding SoftwareInfo}" Classes="muted" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding LicenseInfo}" Classes="muted" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+
+        <Border Classes="card">
+          <StackPanel Spacing="10">
+            <TextBlock Text="About LANtern" Classes="h2" />
+            <TextBlock Text="LANtern is a friendly local area network mapper. It scans private LAN ranges only by default, remembers devices locally, and turns technical network details into plain-language explanations." Classes="muted" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
+</Window>

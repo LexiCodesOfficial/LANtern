@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Lantern.Application/Lantern.Application.csproj" />
+    <Project Path="src/Lantern.Desktop/Lantern.Desktop.csproj" />
+    <Project Path="src/Lantern.Domain/Lantern.Domain.csproj" />
+    <Project Path="src/Lantern.Infrastructure/Lantern.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Lantern.SmokeTests/Lantern.SmokeTests.csproj" />
+  </Folder>
+</Solution>

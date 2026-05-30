@@ -1,0 +1,115 @@
+name: Build Windows Installer
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Optional installer version override, such as 0.2.0"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build-installer:
+    name: Build Windows installer
+    runs-on: windows-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Determine package version
+        id: version
+        shell: pwsh
+        run: |
+          $inputVersion = "${{ inputs.version }}"
+
+          if ($env:GITHUB_REF_TYPE -eq "tag") {
+            if ($env:GITHUB_REF_NAME -notmatch '^v(?<version>\d+\.\d+\.\d+(?:\.\d+)?)$') {
+              throw "Release tags must use a numeric version such as v0.2.0."
+            }
+
+            $version = $Matches.version
+          }
+          elseif ($inputVersion) {
+            $version = $inputVersion
+          }
+          else {
+            [xml]$project = Get-Content -Raw "src\Lantern.Desktop\Lantern.Desktop.csproj"
+            $version = $project.Project.PropertyGroup.Version |
+              Where-Object { $_ } |
+              Select-Object -First 1
+          }
+
+          if ($version -notmatch '^\d+\.\d+\.\d+(?:\.\d+)?$') {
+            throw "Installer version '$version' is invalid. Use a numeric version such as 0.2.0."
+          }
+
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --no-progress --yes
+
+      - name: Build installer
+        shell: pwsh
+        run: .\installer\build-installer.ps1 -Version "${{ steps.version.outputs.version }}"
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: LANtern-Setup-${{ steps.version.outputs.version }}-win-x64
+          path: |
+            artifacts/installer/LANtern-Setup-${{ steps.version.outputs.version }}-win-x64.exe
+            artifacts/installer/LANtern-Setup-${{ steps.version.outputs.version }}-win-x64.sha256.txt
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - build-installer
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download installer artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: LANtern-Setup-${{ needs.build-installer.outputs.version }}-win-x64
+          path: release
+
+      - name: Create or update release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          INSTALLER_VERSION: ${{ needs.build-installer.outputs.version }}
+        run: |
+          installer="./release/LANtern-Setup-${INSTALLER_VERSION}-win-x64.exe"
+          checksum="./release/LANtern-Setup-${INSTALLER_VERSION}-win-x64.sha256.txt"
+
+          if gh release view "${RELEASE_TAG}" >/dev/null 2>&1; then
+            gh release upload "${RELEASE_TAG}" "${installer}" "${checksum}" --clobber
+          else
+            gh release create "${RELEASE_TAG}" "${installer}" "${checksum}" \
+              --title "LANtern ${RELEASE_TAG}" \
+              --generate-notes \
+              --verify-tag
+          fi

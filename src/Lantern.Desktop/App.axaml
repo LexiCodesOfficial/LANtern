@@ -1,0 +1,18 @@
+<Application
+    x:Class="Lantern.Desktop.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Application.Resources>
+    <SolidColorBrush x:Key="AppBackgroundBrush" Color="#F6F7FB" />
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#14213D" />
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="#667085" />
+    <SolidColorBrush x:Key="SubtlePanelBrush" Color="#EEF4FF" />
+    <SolidColorBrush x:Key="SubtlePanelTextBrush" Color="#175CD3" />
+    <SolidColorBrush x:Key="InputBackgroundBrush" Color="#FFFFFF" />
+  </Application.Resources>
+  <Application.Styles>
+    <FluentTheme />
+    <StyleInclude Source="avares://LANtern/Styles.axaml" />
+  </Application.Styles>
+</Application>

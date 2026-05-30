@@ -1,0 +1,58 @@
+<Styles xmlns="https://github.com/avaloniaui">
+  <Design.PreviewWith>
+    <Border Padding="24" Background="{DynamicResource AppBackgroundBrush}" />
+  </Design.PreviewWith>
+
+  <Style Selector="Window">
+    <Setter Property="FontFamily" Value="Inter" />
+    <Setter Property="Background" Value="{DynamicResource AppBackgroundBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.h1">
+    <Setter Property="FontSize" Value="28" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.h2">
+    <Setter Property="FontSize" Value="18" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.muted">
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+  </Style>
+
+  <Style Selector="Border.card">
+    <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="16" />
+    <Setter Property="BoxShadow" Value="0 8 28 0 #14000000" />
+  </Style>
+
+  <Style Selector="Border.sidebar">
+    <Setter Property="Background" Value="#101828" />
+    <Setter Property="Padding" Value="18" />
+  </Style>
+
+  <Style Selector="Button.primary">
+    <Setter Property="Background" Value="#2E90FA" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="CornerRadius" Value="7" />
+    <Setter Property="Padding" Value="14,9" />
+  </Style>
+
+  <Style Selector="Button.secondary">
+    <Setter Property="Background" Value="{DynamicResource SubtlePanelBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource SubtlePanelTextBrush}" />
+    <Setter Property="CornerRadius" Value="7" />
+    <Setter Property="Padding" Value="12,8" />
+  </Style>
+
+  <Style Selector="TextBox, ComboBox">
+    <Setter Property="CornerRadius" Value="7" />
+    <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+  </Style>
+</Styles>

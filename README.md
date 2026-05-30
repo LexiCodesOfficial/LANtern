@@ -139,8 +139,8 @@ The script publishes a self-contained Windows x64 application, compiles the inst
 ```text
 artifacts/
 |-- installer/
-|   |-- LANtern-Setup-1.0.0-win-x64.exe
-|   `-- LANtern-Setup-1.0.0-win-x64.sha256.txt
+|   |-- LANtern-Setup-1.0.1-win-x64.exe
+|   `-- LANtern-Setup-1.0.1-win-x64.sha256.txt
 `-- publish/
     `-- win-x64/
 ```
@@ -167,10 +167,10 @@ The script publishes a self-contained app, includes the MIT license, creates a `
 ```text
 artifacts/
 `-- packages/
-    |-- LANtern-1.0.0-linux-x64.tar.gz
-    |-- LANtern-1.0.0-linux-arm64.tar.gz
-    |-- LANtern-1.0.0-osx-x64.zip
-    `-- LANtern-1.0.0-osx-arm64.zip
+    |-- LANtern-1.0.1-linux-x64.tar.gz
+    |-- LANtern-1.0.1-linux-arm64.tar.gz
+    |-- LANtern-1.0.1-osx-x64.zip
+    `-- LANtern-1.0.1-osx-arm64.zip
 ```
 
 macOS packages should be built on macOS for distribution. The script creates a standard `.app` bundle and uses native icon tooling when available.

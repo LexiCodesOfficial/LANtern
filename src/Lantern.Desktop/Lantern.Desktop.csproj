@@ -20,7 +20,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <AssemblyName>LANtern</AssemblyName>
     <RootNamespace>Lantern.Desktop</RootNamespace>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Lunarbit</Authors>
     <Copyright>Copyright (c) 2026 Lunarbit</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

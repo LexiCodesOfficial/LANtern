@@ -1,6 +1,6 @@
 #define AppName "LANtern"
 #ifndef AppVersion
-#define AppVersion "0.1.0"
+#define AppVersion "1.0.1"
 #endif
 #ifndef AppRuntime
 #define AppRuntime "win-x64"

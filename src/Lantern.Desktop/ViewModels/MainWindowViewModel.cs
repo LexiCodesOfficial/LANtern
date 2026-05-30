@@ -273,7 +273,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     public string ThemeLabel => IsDarkMode ? "Dark mode" : "Light mode";
     public string OnlineSummary => $"{Stats.FirstOrDefault(stat => stat.Label == "Online")?.Value ?? "0"} online";
     public bool IsDashboardVisible => !IsSettingsVisible;
-    public string VersionInfo => $"Version {Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3) ?? "0.1.0"}";
+    public string VersionInfo => $"Version {Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3) ?? "1.0.1"}";
     public string SoftwareInfo => ".NET 9, Avalonia UI, SQLite. Local-first network inventory for private LANs.";
     public string LicenseInfo => "License: MIT. Third-party dependencies keep their respective licenses.";
     public string DataInfo => "Database: local SQLite inventory stored under your user AppData folder.";

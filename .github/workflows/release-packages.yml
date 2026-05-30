@@ -1,4 +1,4 @@
-name: Build Windows Installer
+name: Build Release Packages
 
 on:
   push:
@@ -79,11 +79,53 @@ jobs:
             artifacts/installer/LANtern-Setup-${{ steps.version.outputs.version }}-win-x64.sha256.txt
           if-no-files-found: error
 
+  build-portable-packages:
+    name: Build ${{ matrix.runtime }} package
+    needs:
+      - build-installer
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            runtime: linux-x64
+          - runner: ubuntu-latest
+            runtime: linux-arm64
+          - runner: macos-latest
+            runtime: osx-x64
+          - runner: macos-latest
+            runtime: osx-arm64
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Build portable package
+        shell: pwsh
+        run: ./installer/build-portable.ps1 -Runtime "${{ matrix.runtime }}" -Version "${{ needs.build-installer.outputs.version }}"
+
+      - name: Upload portable artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: LANtern-${{ needs.build-installer.outputs.version }}-${{ matrix.runtime }}
+          path: |
+            artifacts/packages/LANtern-${{ needs.build-installer.outputs.version }}-${{ matrix.runtime }}.tar.gz
+            artifacts/packages/LANtern-${{ needs.build-installer.outputs.version }}-${{ matrix.runtime }}.zip
+            artifacts/packages/LANtern-${{ needs.build-installer.outputs.version }}-${{ matrix.runtime }}.*.sha256.txt
+          if-no-files-found: error
+
   release:
     name: Publish GitHub release
     if: startsWith(github.ref, 'refs/tags/v')
     needs:
       - build-installer
+      - build-portable-packages
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -95,6 +137,13 @@ jobs:
           name: LANtern-Setup-${{ needs.build-installer.outputs.version }}-win-x64
           path: release
 
+      - name: Download portable artifacts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: LANtern-${{ needs.build-installer.outputs.version }}-*
+          path: release
+          merge-multiple: true
+
       - name: Create or update release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -102,13 +151,10 @@ jobs:
           RELEASE_TAG: ${{ github.ref_name }}
           INSTALLER_VERSION: ${{ needs.build-installer.outputs.version }}
         run: |
-          installer="./release/LANtern-Setup-${INSTALLER_VERSION}-win-x64.exe"
-          checksum="./release/LANtern-Setup-${INSTALLER_VERSION}-win-x64.sha256.txt"
-
           if gh release view "${RELEASE_TAG}" >/dev/null 2>&1; then
-            gh release upload "${RELEASE_TAG}" "${installer}" "${checksum}" --clobber
+            gh release upload "${RELEASE_TAG}" ./release/* --clobber
           else
-            gh release create "${RELEASE_TAG}" "${installer}" "${checksum}" \
+            gh release create "${RELEASE_TAG}" ./release/* \
               --title "LANtern ${RELEASE_TAG}" \
               --generate-notes \
               --verify-tag

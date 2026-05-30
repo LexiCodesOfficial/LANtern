@@ -22,7 +22,7 @@ public static class DependencyInjection
         {
             var databasePath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "Lantern",
+                "LANtern",
                 "lantern.db");
 
             return new SqliteDeviceRepository(databasePath);

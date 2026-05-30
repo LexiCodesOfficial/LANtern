@@ -275,7 +275,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     public bool IsDashboardVisible => !IsSettingsVisible;
     public string VersionInfo => $"Version {Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3) ?? "0.1.0"}";
     public string SoftwareInfo => ".NET 9, Avalonia UI, SQLite. Local-first network inventory for private LANs.";
-    public string LicenseInfo => "License: local project prototype. Third-party dependencies keep their respective licenses.";
+    public string LicenseInfo => "License: MIT. Third-party dependencies keep their respective licenses.";
     public string DataInfo => "Database: local SQLite inventory stored under your user AppData folder.";
     public string MikroTikInfo => "Optional: import active DHCP lease hostnames from RouterOS API port 8728. Enable the API service on your router and use a read-only account.";
     public string PrivateSubnetSummary => _localSubnets.GetPrivateSubnets() is { Count: > 0 } subnets
